@@ -1,3 +1,4 @@
+
 [
     {
         "id": 1,
@@ -14,11 +15,15 @@
         "name": "Amit",
         "course": "Java"
     },
-    { 
-     
+    {
         "id": 4,
         "name": "Anil",
         "course": "DevOps"
+    },
+    {
+        "id": 5,
+        "name": "Pragati",
+        "course": "react"
     }
 ]
 
