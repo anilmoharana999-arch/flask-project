@@ -13,6 +13,12 @@
         "id": 3,
         "name": "Amit",
         "course": "Java"
+    },
+    { 
+     
+        "id": 4,
+        "name": "Anil",
+        "course": "DevOps"
     }
 ]
 
