@@ -1,0 +1,113 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My To-Do List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f2f2f2;
+            margin: 0;
+            padding: 40px;
+        }
+
+        .container {
+            max-width: 450px;
+            margin: auto;
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #1677d2;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        #message {
+            text-align: center;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>To-Do List</h2>
+
+    <form id="todoForm">
+        <label>Item Name</label>
+        <input
+            type="text"
+            id="itemName"
+            placeholder="Enter item name"
+            required
+        >
+
+        <label>Item Description</label>
+        <textarea
+            id="itemDescription"
+            placeholder="Enter item description"
+            required
+        ></textarea>
+
+        <button type="submit">Submit</button>
+    </form>
+
+    <p id="message"></p>
+</div>
+
+<script>
+document.getElementById("todoForm").addEventListener("submit", async function(event) {
+    event.preventDefault();
+
+    const itemName = document.getElementById("itemName").value;
+    const itemDescription = document.getElementById("itemDescription").value;
+    const message = document.getElementById("message");
+
+    try {
+        const response = await fetch("/submittodoitem", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                itemName: itemName,
+                itemDescription: itemDescription
+            })
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            message.textContent = "To-Do item saved successfully!";
+            message.style.color = "green";
+            document.getElementById("todoForm").reset();
+        } else {
+            message.textContent = result.error || "Something went wrong";
+            message.style.color = "red";
+        }
+    } catch (error) {
+        message.textContent = "Unable to connect to server.";
+        message.style.color = "red";
+    }
+});
+</script>
+
+</body>
+</html>

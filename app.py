@@ -1,8 +1,8 @@
 
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 from pymongo import MongoClient
-from dotenv import load_dotenv
 from pymongo.errors import PyMongoError
+from dotenv import load_dotenv
 import json
 import os
 
@@ -13,10 +13,11 @@ load_dotenv()
 
 MONGO_URI = os.getenv("MONGO_URI")
 
-# Connect to MongoDB Atlas
+# Check MongoDB connection string
 if not MONGO_URI:
     raise ValueError("MONGO_URI is missing from the .env file")
 
+# Connect to MongoDB Atlas
 client = MongoClient(
     MONGO_URI,
     serverSelectionTimeoutMS=10000
@@ -32,8 +33,15 @@ try:
     print("SUCCESS: MongoDB Atlas connected!")
     print("Database:", db.name)
     print("Collection:", collection.name)
+
 except PyMongoError as e:
     print("MongoDB connection failed:", e)
+
+
+# Home page - To-Do frontend
+@app.route('/', methods=['GET'])
+def home():
+    return render_template('index.html')
 
 
 # Existing GET API
@@ -41,7 +49,8 @@ except PyMongoError as e:
 def get_data():
 
     file_path = os.path.join(
-        os.path.dirname(__file__), 'data.json'
+        os.path.dirname(__file__),
+        'data.json'
     )
 
     try:
@@ -51,10 +60,12 @@ def get_data():
         return jsonify(data)
 
     except (FileNotFoundError, json.JSONDecodeError):
-        return jsonify({"error": "Unable to read data.json"}), 500
+        return jsonify({
+            "error": "Unable to read data.json"
+        }), 500
 
 
-# To-Do POST API
+# To-Do POST API - Save items to MongoDB Atlas
 @app.route('/submittodoitem', methods=['POST'])
 def submit_todo_item():
 
@@ -87,9 +98,10 @@ def submit_todo_item():
         }), 201
 
     except PyMongoError as e:
+        app.logger.error("Database insertion failed: %s", e)
+
         return jsonify({
-            "error": "Database insertion failed",
-            "details": str(e)
+            "error": "Database insertion failed"
         }), 500
 
 
@@ -100,6 +112,7 @@ if __name__ == '__main__':
         debug=True,
         use_reloader=False
     )
+
 
 
 
